@@ -1,6 +1,8 @@
 Main page of notes:
 https://github.com/MrHakimov/Guides/wiki/Haskell
 
+Link to the online-book: http://learnyouahaskell.com/chapters
+
 ### GHCI
 `:l fileName (without .hs)` - to start working with specified file
 
@@ -413,4 +415,157 @@ sumValue = putStrLn . show $ 1 + 2
 -- Get area of shapes
 areaOfCircle = area (Circle 50 60 20)
 areaOfRectangle = area $ Rectangle 10 10 100 100
+```
+
+### Type classes
+```hs
+data Person = Person String String Int Float String String deriving (Show)
+
+firstName :: Person -> String  
+firstName (Person firstname _ _ _ _ _) = firstname  
+  
+lastName :: Person -> String  
+lastName (Person _ lastname _ _ _ _) = lastname  
+  
+age :: Person -> Int  
+age (Person _ _ age _ _ _) = age  
+  
+height :: Person -> Float  
+height (Person _ _ _ height _ _) = height  
+  
+phoneNumber :: Person -> String  
+phoneNumber (Person _ _ _ _ number _) = number  
+  
+flavor :: Person -> String  
+flavor (Person _ _ _ _ _ flavor) = flavor
+```
+
+vs
+
+```hs
+data Person = Person { firstName :: String  
+                     , lastName :: String  
+                     , age :: Int  
+                     , height :: Float  
+                     , phoneNumber :: String  
+                     , flavor :: String  
+                     } deriving (Show) -- it's called `Record syntax`
+```
+
+Notice that when defining a `Person`, we used the same name for the data type and the value constructor. This has no special meaning, although it's common to use the same name as the type if there's only one value constructor.
+
+```hs
+data Employee = Employee { name :: String,	
+						   position :: String,
+						   idNum :: Int 
+						   } deriving (Eq, Show)
+						   
+samSmith = Employee {name = "Sam Smith", position = "Manager", idNum = 1000}
+pamMarx = Employee {name = "Pam Marx", position = "Sales", idNum = 1001}
+
+-- We can check equality because of Eq
+isSamPam = samSmith == pamMarx
+ 
+-- We can print out data because of Show
+samSmithData = show samSmith
+```
+
+Overriding show and equality methods:
+```hs
+-- Make a type instance of the typeclass Eq and Show
+data ShirtSize = S | M | L
+ 
+instance Eq ShirtSize where
+	S == S = True
+	M == M = True
+	L == L = True
+	_ == _ = False
+ 
+instance Show ShirtSize where
+	show S = "Small"
+	show M = "Medium"
+	show L = "Large"
+	
+-- Check if S is in the list
+smallAvail = S `elem` [S, M, L]
+ 
+-- Get string value for ShirtSize
+theSize = show S
+```
+
+Custom typeclass with custom equality:
+```hs
+-- Define a custom typeclass that checks for equality
+-- a represents any type that implements the function areEqual
+class MyEq a where
+	areEqual :: a -> a -> Bool
+	
+-- Allow Bools to check for equality using areEqual
+instance MyEq ShirtSize where
+	areEqual S S = True
+	areEqual M M = True
+	areEqual L L = True
+	areEqual _ _ = False
+ 
+newSize = areEqual M M
+```
+
+### I/O
+```hs
+sayHello = do
+	-- Prints the string with a new line, putStr - without a new line
+	putStrLn "What's your name: "
+	
+	-- Gets user input and stores it in name
+	name <- getLine
+	
+	putStrLn $ "Hello " ++ name
+
+-- requires `import System.IO`	
+-- File IO
+-- Write to a file 
+writeToFile = do
+ 
+	-- Open the file using WriteMode
+	theFile <- openFile "test.txt" WriteMode
+	
+	-- Put the text in the file
+	hPutStrLn theFile ("Random line of text")
+	hPutStrLn theFile ("Another random line of text")
+	
+	-- Close the file
+	hClose theFile
+	
+readFromFile = do
+ 
+	-- Open the file using ReadMode
+	theFile2 <- openFile "test.txt" ReadMode
+	
+	-- Get the contents of the file
+	contents <- hGetContents theFile2
+	putStr contents
+	
+	-- Close the file
+	hClose theFile2
+```
+
+### Example -- Fibonacci numbers
+```hs
+-- | for every (a, b) add them
+-- <- stores a 2 value tuple in a and b
+-- tail : get all list items minus the first
+-- zip creates pairs using the contents from 2 lists being the lists fib and the 
+-- list (tail fib)
+ 
+fib = 1 : 1 : [a + b | (a, b) <- zip fib (tail fib) ]
+ 
+-- First time through fib = 1 and (tail fib) = 1
+-- The list is now [1, 1, 2] because a: 1 + b: 1 = 2
+ 
+-- The second time through fib = 1 and (tail fib) = 2
+-- The list is now [1, 1, 2, 3] because a: 1 + b: 2 = 3
+ 
+fib300 = fib !! 300 -- Gets the value stored in index 300 of the list
+ 
+-- take 20 fib returns the first 20 Fibonacci numbers
 ```
