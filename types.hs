@@ -1,4 +1,5 @@
 import Data.List
+import System.IO
 import MyModule
 
 bigFloat = 3.99999999999 + 0.00000000005
@@ -288,3 +289,104 @@ sumValue = putStrLn . show $ 1 + 2
 -- Get area of shapes
 areaOfCircle = area (Circle 50 60 20)
 areaOfRectangle = area $ Rectangle 10 10 100 100
+
+data Employee = Employee { name :: String,	
+						   position :: String,
+						   idNum :: Int 
+						   } deriving (Eq, Show)
+						   
+samSmith = Employee {name = "Sam Smith", position = "Manager", idNum = 1000}
+pamMarx = Employee {name = "Pam Marx", position = "Sales", idNum = 1001}
+ 
+isSamPam = samSmith == pamMarx
+ 
+-- We can print out data because of show
+samSmithData = show samSmith
+ 
+-- Make a type instance of the typeclass Eq and Show
+data ShirtSize = S | M | L
+ 
+instance Eq ShirtSize where
+	S == S = True
+	M == M = True
+	L == L = True
+	_ == _ = False
+ 
+instance Show ShirtSize where
+	show S = "Small"
+	show M = "Medium"
+	show L = "Large"
+	
+-- Check if S is in the list
+smallAvail = S `elem` [S, M, L]
+ 
+-- Get string value for ShirtSize
+theSize = show S
+ 
+-- Define a custom typeclass that checks for equality
+-- a represents any type that implements the function areEqual
+class MyEq a where
+	areEqual :: a -> a -> Bool
+	
+-- Allow Bools to check for equality using areEqual
+instance MyEq ShirtSize where
+	areEqual S S = True
+	areEqual M M = True
+	areEqual L L = True
+	areEqual _ _ = False
+ 
+newSize = areEqual M M
+
+sayHello = do
+	-- Prints the string with a new line, putStr - without a new line
+	putStrLn "What's your name: "
+	
+	-- Gets user input and stores it in name
+	name <- getLine
+	
+	putStrLn $ "Hello " ++ name
+
+-- requires `import System.IO`	
+-- File IO
+-- Write to a file 
+writeToFile = do
+ 
+	-- Open the file using WriteMode
+	theFile <- openFile "test.txt" WriteMode
+	
+	-- Put the text in the file
+	hPutStrLn theFile ("Random line of text")
+	hPutStrLn theFile ("Another random line of text")
+	
+	-- Close the file
+	hClose theFile
+	
+readFromFile = do
+ 
+	-- Open the file using ReadMode
+	theFile2 <- openFile "test.txt" ReadMode
+	
+	-- Get the contents of the file
+	contents <- hGetContents theFile2
+	putStr contents
+	
+	-- Close the file
+	hClose theFile2
+
+-- | for every (a, b) add them
+-- <- stores a 2 value tuple in a and b
+-- tail : get all list items minus the first
+-- zip creates pairs using the contents from 2 lists being the lists fib and the 
+-- list (tail fib)
+ 
+fib = 1 : 1 : [a + b | (a, b) <- zip fib (tail fib) ]
+ 
+-- First time through fib = 1 and (tail fib) = 1
+-- The list is now [1, 1, 2] because a: 1 + b: 1 = 2
+ 
+-- The second time through fib = 1 and (tail fib) = 2
+-- The list is now [1, 1, 2, 3] because a: 1 + b: 2 = 3
+ 
+fib300 = fib !! 300 -- Gets the value stored in index 300 of the list
+ 
+-- take 20 fib returns the first 20 Fibonacci numbers
