@@ -3,12 +3,16 @@ https://github.com/MrHakimov/Guides/wiki/Haskell
 
 Link to the online-book: http://learnyouahaskell.com/chapters
 
+Link to the online-book: http://learnyouahaskell.com/chapters
+
 ### GHCI
 `:l fileName (without .hs)` - to start working with specified file
 
 `:r` - compile?
 
 `:q` - leave GHCI
+
+`:set +s` - to track space and time used
 
 `ghc --make fileName` - compiles the program
 
@@ -39,6 +43,7 @@ bigFloat = 3.99999999999 + 0.00000000005 -- 4.00000000004
 
 `Bool` - True or False
 `Char` - a single characters (')
+An array of `Char`'s in Haskell is equivalent to type `String`.
 `Tuple` - list made up of different data types.
 
 ```hs
@@ -598,3 +603,20 @@ myMap = Map.fromList dict
 ```
 
 More information [here](https://hackage.haskell.org/package/containers-0.4.0.0/docs/Data-Map.html).
+
+### For lab
+[Functional Parsing](https://www.youtube.com/watch?v=dDtZLm7HIJs)
+
+[JSON parser in Haskell](https://www.youtube.com/watch?v=N9RUqGYuGfw)
+
+[Playlist with parsing videos in Haskell](https://www.youtube.com/watch?v=9AllRc64pVE&list=PL_xuff3BkASMOzBr0hKVKLuSnU4UIinKx)
+
+[Interpreter in Haskell](https://habr.com/ru/post/335366/)
+
+[Happy Guide](https://www.haskell.org/happy/doc/happy.pdf)
+
+[Alex Guide](https://www.haskell.org/alex/doc/alex.pdf)
+
+[Happy plus Alex](https://github.com/dagit/happy-plus-alex/tree/master/src)
+
+[Alex and Happy](https://leanpub.com/alexandhappy/read)
