@@ -3,7 +3,9 @@ https://github.com/MrHakimov/Guides/wiki/Haskell
 
 Link to the online-book: http://learnyouahaskell.com/chapters
 
-Link to the online-book: http://learnyouahaskell.com/chapters
+Happy usage: https://www.haskell.org/happy/doc/html/sec-using.html
+
+Alex usage: https://www.haskell.org/alex/doc/html/alex-files.html
 
 ### GHCI
 `:l fileName (without .hs)` - to start working with specified file
