@@ -612,6 +612,20 @@ instance MyEq ShirtSize where
 newSize = areEqual M M
 ```
 
+Functions can be depended on each other, for example, here below we can implement any one of these functions and the second one will be constructed from the first one.
+
+```hs
+class Eq a where
+    (==), (/=) :: a -> a -> Bool
+    x /= y = not (x == y)
+    x == y = not (x /= y)
+
+instance Eq Bool where
+    True  == True     = True
+    False == False    = True
+    _     == _        = False
+```
+
 ### I/O
 ```hs
 sayHello = do
