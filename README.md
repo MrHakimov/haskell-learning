@@ -383,7 +383,32 @@ threePlusList = map adds3 [1,2,3,4,5]
 Lamdas are just a way to create a functions that don't have a name.
 ```hs
 dblTo10 = map (\x -> x * 2) [1..10] -- \x - is what would be received
+
+f x = 2 * x + 7
+-- or
+f' = \x -> 2 * x + 7
+
+-- one more example
+
+lenVec x y = sqrt $ x^2 + y^2
+-- or
+levVec1 x = \y -> sqrt $ x^2 + y^2
+-- or
+lenVec' = \x -> \y -> sqrt $ x^2 + y^2
+-- or
+lenVec'' = \x y -> sqrt $ x^2 + y^2
+
+-- more examples :)
+
+sumFstFst = (+) `on` helper
+    where helper pp = fst $ fst pp
+    
+-- or
+
+sumFstFst' = (+) `on` (\pp -> fst $ fst pp)
 ```
+
+These functions are also called anonymous functions.
 
 ### Conditionals
 ```hs
