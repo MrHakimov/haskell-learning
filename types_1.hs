@@ -47,3 +47,12 @@ seqA n | n == 0 = 1
 helper'' :: Integer -> Integer -> Integer -> Integer -> Integer
 helper'' curr _ _ 0 = curr
 helper'' prev1 prev2 prev3 n = helper'' (prev1 + prev2 - 2 * prev3) prev1 prev2 (n - 1)
+
+sum'n'count :: Integer -> (Integer, Integer)
+sum'n'count n | n == 0 = (0, 1)
+              | n > 0 = helper''' 0 0 n
+              | otherwise = helper''' 0 0 (-n)
+
+helper''' :: Integer -> Integer -> Integer -> (Integer, Integer)
+helper''' sum cnt 0 = (sum, cnt)
+helper''' sum cnt n = helper''' (sum + (mod n 10)) (cnt + 1) (div n 10)
