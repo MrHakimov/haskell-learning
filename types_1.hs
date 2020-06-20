@@ -37,3 +37,13 @@ helper' :: Integer -> Integer -> Integer -> Integer
 helper' prev _ 0 = prev
 helper' prv cur n | n > 0 = helper' cur (prv + cur) (n - 1)
                   | n < 0 = helper' (cur - prv) prv (n + 1)
+
+seqA :: Integer -> Integer
+seqA n | n == 0 = 1
+       | n == 1 = 2
+       | n == 2 = 3
+       | n > 0 = helper'' 3 2 1 (n - 2)
+
+helper'' :: Integer -> Integer -> Integer -> Integer -> Integer
+helper'' curr _ _ 0 = curr
+helper'' prev1 prev2 prev3 n = helper'' (prev1 + prev2 - 2 * prev3) prev1 prev2 (n - 1)
