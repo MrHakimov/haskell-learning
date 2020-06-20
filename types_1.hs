@@ -1,4 +1,5 @@
 import Data.Char
+import Data.Function -- for `on`
 
 discount :: Double -> Double -> Double -> Double
 discount limit proc sum = if sum >= limit then sum * (100 - proc) / 100 else sum
@@ -56,3 +57,75 @@ sum'n'count n | n == 0 = (0, 1)
 helper''' :: Integer -> Integer -> Integer -> (Integer, Integer)
 helper''' sum cnt 0 = (sum, cnt)
 helper''' sum cnt n = helper''' (sum + (mod n 10)) (cnt + 1) (div n 10)
+
+getSecondFrom :: a -> b -> c -> b    -- Polymorphism of function arguments
+getSecondFrom a b c = b              -- This function can be called on arguments of any types
+
+multSecond = g `on` h
+
+g a b = a * b
+
+h p = snd p
+
+on3 :: (b -> b -> b -> c) -> (a -> b) -> a -> a -> a -> c
+on3 op f x y z = op (f x) (f y) (f z)
+
+-- doItYourself = f . g . h
+
+-- f = logBase 2
+
+-- g = (^ 3)
+
+-- h = max 42
+
+class Printable a where
+	toString  :: a -> String
+
+instance Printable Bool where
+	toString True  = "true"
+	toString False = "false"
+	toString _     = "error"
+
+instance Printable () where
+	toString _ = "unit type"
+
+instance (Printable a, Printable b) => Printable (a, b) where
+	toString (a, b) = "(" ++ toString a ++ "," ++ toString b ++ ")"
+
+class KnownToGork a where
+    stomp :: a -> a
+    doesEnrageGork :: a -> Bool
+
+class KnownToMork a where
+    stab :: a -> a
+    doesEnrageMork :: a -> Bool
+
+class (KnownToGork a, KnownToMork a) => KnownToGorkAndMork a where
+    stompOrStab :: a -> a
+    stompOrStab a = if (doesEnrageGork a && doesEnrageMork a)
+    	then
+    		(stomp (stab a))
+    	else
+    		if (doesEnrageMork a)
+    			then (stomp a)
+    			else
+    				if (doesEnrageGork a)
+    					then (stab a)
+    					else a
+
+a = 127.22
+b = 4.12
+c = 0.1
+d = 2
+ip = show a ++ show b ++ show c ++ show d
+
+class (Bounded a, Eq a, Enum a) => SafeEnum a where
+  ssucc :: a -> a
+  ssucc a
+  	| a == maxBound = minBound
+  	| otherwise     = succ a
+
+  spred :: a -> a
+  spred a
+    | a == minBound = maxBound
+    | otherwise     = pred a
