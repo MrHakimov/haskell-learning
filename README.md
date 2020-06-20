@@ -383,7 +383,32 @@ threePlusList = map adds3 [1,2,3,4,5]
 Lamdas are just a way to create a functions that don't have a name.
 ```hs
 dblTo10 = map (\x -> x * 2) [1..10] -- \x - is what would be received
+
+f x = 2 * x + 7
+-- or
+f' = \x -> 2 * x + 7
+
+-- one more example
+
+lenVec x y = sqrt $ x^2 + y^2
+-- or
+levVec1 x = \y -> sqrt $ x^2 + y^2
+-- or
+lenVec' = \x -> \y -> sqrt $ x^2 + y^2
+-- or
+lenVec'' = \x y -> sqrt $ x^2 + y^2
+
+-- more examples :)
+
+sumFstFst = (+) `on` helper
+    where helper pp = fst $ fst pp
+    
+-- or
+
+sumFstFst' = (+) `on` (\pp -> fst $ fst pp)
 ```
+
+These functions are also called anonymous functions.
 
 ### Conditionals
 ```hs
@@ -585,6 +610,25 @@ instance MyEq ShirtSize where
 	areEqual _ _ = False
  
 newSize = areEqual M M
+```
+
+Functions can be depended on each other, for example, here below we can implement any one of these functions and the second one will be constructed from the first one.
+
+```hs
+class Eq a where
+    (==), (/=) :: a -> a -> Bool
+    x /= y = not (x == y)
+    x == y = not (x /= y)
+
+instance Eq Bool where
+    True  == True     = True
+    False == False    = True
+    _     == _        = False
+
+-- polymorphism:
+
+instance (Eq a, Eq b) => Eq (a, b) where
+    p1 == p2    =   fst p1 == fst p2 && snd p1 == snd p2
 ```
 
 ### I/O
