@@ -105,7 +105,7 @@ notTrue = not(True)
 
 ### Local bindings
 
-Binding called 'let in':
+#### Binding called 'let in':
 
 ```hs
 roots' a b c =
@@ -148,6 +148,29 @@ One more example:
 rootsDiff a b c = let
     (x1, x2) = roots a b c
     in x2 - x1
+```
+
+#### Binding called 'where':
+
+The difference between 'where' and 'let in' is in order of defining used variables:
+```hs
+roots'''' a b c = (x1, x2) where
+    x1 = (-b - d) / aTwice
+    x2 = (-b + d) / aTwice
+    d = sqrt $ b ^ 2 - 4 * a * c
+    aTwice = 2 * a
+```
+
+**NOTE:** One more difference between 'let in' and 'where' is that 'let in' is an expression, but 'where' is not. For example, `let x = 2 in x ^ 2` typed in ghci console will return 4, or `(let x = 2 in x ^ 2) ^ 2` will return 16, but `x ^ 2 where x = 2` will cause an error!
+
+So, the question appears - why we need 'where'? The answer is that 'where' can be used in two or more branches at the same time, while 'let in' can not be used. Example:
+```hs
+factorial7 :: Integer -> Integer
+factorial7 n | n >= 0    = helper 1 n
+             | otherwise = error "arg must be >= 0" -- think that we need to call 'helper' here also
+    where
+        helper acc 0 = acc
+	helper acc n = helper (acc * n) (n - 1)
 ```
 
 ### Lists
