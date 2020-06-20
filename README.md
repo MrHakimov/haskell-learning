@@ -103,6 +103,53 @@ trueOrFalse = True || False
 notTrue = not(True)
 ```
 
+### Local bindings
+
+Binding called 'let in':
+
+```hs
+roots' a b c =
+    let d = sqrt (b ^ 2 - 4 * a * c) in
+    ((-b - d) / (2 * a), (-b + d) / (2 * a))
+```
+
+An example with multiple bindings (bindings can be interconnected with each other, but there could be such a connections that depend on each other without stop-condition, but it's a programmer's problem):
+```hs
+roots'' a b c =
+    let {d = sqrt (b ^ 2 - 4 * a * c); x1 = (-b - d) / (2 * a); x2 = (-b + d) / (2 * a)}
+    in (x1, x2)
+```
+
+An example with indentation:
+```hs
+roots''' a b c =
+    let
+      x1 = (-b - d) / aTwice
+      x2 = (-b + d) / aTwice
+      d = sqrt $ b ^ 2 - 4 * a * c
+      aTwice = 2 * a
+    in (x1, x2)
+```
+
+The first one (with ;) is used, for example, in terminal, in ghci.
+
+It's also possible to use 'let in' for defining local functions:
+```hs
+factorial n
+    | n >= 0 = let
+        helper acc 0 = acc
+	helper acc n = helper (acc * n) (n - 1)
+      in helper 1 n
+    | otherwise = error "arg must be >= 0"
+```
+
+One more example:
+```hs
+rootsDiff a b c = let
+    (x1, x2) = roots a b c
+    in x2 - x1
+```
+
 ### Lists
 ```hs
 primeNumbers = [3, 5, 7, 11]
