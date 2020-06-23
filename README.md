@@ -173,6 +173,54 @@ factorial7 n | n >= 0    = helper 1 n
 	helper acc n = helper (acc * n) (n - 1)
 ```
 
+### Redexes
+
+Let's look to an example:
+```hs
+id x = x
+const x y = x
+max x y = if x <= y then y else x
+infixr 0 $
+f $ x = f x
+```
+
+and let's count the number of redexes in this expression:
+```hs
+const $ const (4 + 5) $ max 42
+```
+
+**Redex** is a part of expression, which fully fits to the left part of some definition. The number of redexes is not the number of steps until final calculation, it's the number of ways to put an expression to a definition.
+
+For example, expression
+```hs
+max 5 $ const 3 9
+```
+has 2 redexes.
+
+First one - we can use the definition of `const`:
+```hs
+const x y = x
+const 3 9 = 3
+```
+or the second one - we can use the definition of `$`:
+```hs
+f $ x = f x
+(max 5) $ (const 3 9) = (max 5) (const 3 9)
+```
+
+Thus, we have two ways:
+```hs
+max 5 $ 3           -- const
+(max 5) (const 3 9) -- `$`
+```
+
+And analogically for the main expression we will have 3 redexes:
+```hs
+const ((const (4 + 5)) $ (max 42)) -- first $
+const $ ((const (4 + 5)) (max 42)) -- second $
+const $ ((const 9) $ (max 42))     -- `+`
+```
+
 ### Lists
 ```hs
 primeNumbers = [3, 5, 7, 11]
