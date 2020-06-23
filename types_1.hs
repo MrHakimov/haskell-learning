@@ -129,3 +129,9 @@ class (Bounded a, Eq a, Enum a) => SafeEnum a where
   spred a
     | a == minBound = maxBound
     | otherwise     = pred a
+
+toDouble :: Int -> Double
+toDouble = fromInteger . toInteger
+
+avg :: Int -> Int -> Int -> Double
+avg a b c = (toDouble a + toDouble b + toDouble c) / 3
