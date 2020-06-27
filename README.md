@@ -310,7 +310,11 @@ quux n (x, y) = let x' = x + 1
 4. Функция quuz.
 Единственная функция где применения seq имеет эффект. В отличии от baz, тут seq применяется непосредственно к элементам пары (x', y') в отдельности и поэтому они вычисляются принудительно.
 
-
+It's also used to define strict application:
+```hs
+($!) :: (a -> b) -> a -> b
+f $! x = x `seq` f x
+```
 
 ### Lists
 ```hs
@@ -584,7 +588,7 @@ test y =
 ### Modules
 Example of creating module (**MyModule.hs**):
 ```hs
-module MyModule (doubleNumber, tripleNumber) where
+module MyModule (doubleNumber, tripleNumber) where -- doubleNumber and tripleNumber will become public, but other functions will not be available outside
 	doubleNumber x = x * 2
 	tripleNumber x = x * 3
 ```
@@ -592,6 +596,20 @@ module MyModule (doubleNumber, tripleNumber) where
 In the file where you want to use this created module type:
 ```hs
 import MyModule
+```
+
+```hs
+module Demo where
+
+import Data.Char (toLower) -- import single function
+
+import Data.Char (toLower, toUpper) -- import multiple functions
+
+import Data.List -- import all functions
+
+import Data.List hiding (union) -- import all functions except `union`
+
+import qualified Data.Set -- requires to use functions only with qualified names (Data.Set.union instead of union)
 ```
 
 ### Enumerated types
