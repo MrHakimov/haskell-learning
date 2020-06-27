@@ -221,6 +221,97 @@ const $ ((const (4 + 5)) (max 42)) -- second $
 const $ ((const 9) $ (max 42))     -- `+`
 ```
 
+### Normal forms
+The expression that doesn't have redexes is in **NORMAL FORM**.
+There is also intermediate status which is called **WEAK HEAD NORMAL FORM (WHNF)**.
+
+Examples:
+```hs
+{-
+
+NF
+42
+(3, 4)
+\x -> x + 2
+
+not NF
+"Real" ++ " world"
+sin (pi / 2)
+(\x -> x + 2) 5
+(3, 1 + 5)
+
+WHNF
+\x -> x + 2 * 3 -- not calculated part (potential redex) is inside lambda expression
+(3, 1 + 5) -- not calculated part is inside constructor
+(,) (4 * 5) -- partially used constructor
+(+) (7 ^ 2)
+
+-}
+```
+
+(!) A lot of calculations in Haskell are reducing to WHNF.
+
+### Strictness in Haskell (seq)
+```hs
+⊥ `seq` b = ⊥
+a `seq` b = b
+```
+
+The term bottom (⊥) refers to a computation which never completes successfully. That includes a computation that fails due to some kind of error, and a computation that just goes into an infinite loop (without returning any data).
+
+A common misconception regarding `seq` is that `seq x` "evaluates" `x`. Well, sort of. `seq` doesn't evaluate anything just by virtue of existing in the source file, all it does is introduce an artificial data dependency of one value on another: when the result of `seq` is evaluated, the first argument must also (sort of; see below) be evaluated. As an example, suppose `x :: Integer`, then `seq x b` behaves essentially like `if x == 0 then b else b` – unconditionally equal to `b`, but forcing `x` along the way. In particular, the expression ```x `seq` x``` is completely redundant, and always has exactly the same effect as just writing `x`.
+
+**Example (RUSSIAN):**
+
+При вычислении каких из перечисленных ниже функций использование seq предотвратит нарастание количества невычисленных редексов при увеличении значения первого аргумента:
+
+```hs
+foo 0 x = x
+foo n x = let x' = foo (n - 1) (x + 1)
+          in x' `seq` x'
+
+bar 0 f = f
+bar x f = let f' = \a -> f (x + a)
+              x' = x - 1
+          in f' `seq` x' `seq` bar x' f'
+
+baz 0 (x, y) = x + y
+baz n (x, y) = let x' = x + 1
+                   y' = y - 1
+                   p  = (x', y')
+                   n' = n - 1
+               in p `seq` n' `seq` baz n' p
+
+quux 0 (x, y) = x + y
+quux n (x, y) = let x' = x + 1
+                    y' = y - 1
+                    p  = (x', y')
+                    n' = n - 1
+                in x' `seq` y' `seq` n' `seq` quux n' p
+```
+
+Разбор:
+
+1. Функция foo. 
+Тут можно сразу заметить как применен seq : x' `seq` x', что можно прочитать как - "вычислить x' перед тем как вычислить x'". Таким образом этот seq бессмысленный и эквивалентен просто вычислению x'. На содержание функции можно даже не смотреть.
+
+2. Функция bar.
+Тут есть два места накопления редексов (если так можно выразиться):
+Первое - это лямбда выражение f' = \a -> f (x + a),
+которое разрастается в \a -> ... (\a -> (\a -> f (x + a))(x + a)) ...(x+a).
+Тут seq не вызывает форсированного вычисления, так как лямбда выражение это уже WHNF, - а seq дальше WHNF не вычисляет.
+И второе - это x' = x - 1.
+Здесь seq приводит к вычислению, но все равно бесполезен, так как к вычислению x' приводит первая формула уравнения определения функции bar 0 f = f. Тут используется сопоставление с образцом (pattern matching), что требует сравнения первого аргумента с 0, а для этого фактический аргумент должен быть вычислен.
+Таким образом применение seq в этой функции не играет роли.
+
+3. Функция baz.
+Аналогично предыдущему случаю, с той лишь разницей, что тут не лямбда выражение, а пара (x', y') находится в WHNF.
+
+4. Функция quuz.
+Единственная функция где применения seq имеет эффект. В отличии от baz, тут seq применяется непосредственно к элементам пары (x', y') в отдельности и поэтому они вычисляются принудительно.
+
+
+
 ### Lists
 ```hs
 primeNumbers = [3, 5, 7, 11]
