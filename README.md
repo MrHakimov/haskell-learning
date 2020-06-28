@@ -406,6 +406,24 @@ typically for floating-point numbers
 multTable = [[x * y | y <- [1..10]] | x <- [1..10]]
 ```
 
+```hs
+fst' ((,) x y) = x -- (,) is a constructor of tuples
+fst'' (x, y) = x
+
+head' ((:) x xs) = x -- (:) is a constructor of lists
+head'' (x : xs) = x
+
+tail' (x : xs) = xs
+tail'' (_ : xs) = xs
+
+second :: [a] -> a
+second = head . tail     -- second xs = head (tail xs)
+
+second' (_ : xs) = head xs
+
+second'' (_ : x : _) = x
+```
+
 ### Tuples
 ```hs
 randTuple = (1, "Random Tuple")
