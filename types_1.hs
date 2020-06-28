@@ -135,3 +135,55 @@ toDouble = fromInteger . toInteger
 
 avg :: Int -> Int -> Int -> Double
 avg a b c = (toDouble a + toDouble b + toDouble c) / 3
+
+sum', product' :: (Num a) => [a] -> a
+
+sum' [x] = x
+sum' (x : xs) = x + sum xs
+
+product' [x] = x
+product' (x : xs) = x * product' xs
+
+maximum', minimum' :: (Ord a) => [a] -> a
+maximum' [x] = x
+maximum' (x : xs) | x >= maximum' xs = x
+                  | otherwise        = maximum' xs
+
+minimum' [x] = x
+minimum' (x : xs) | x <= minimum' xs = x
+                  | otherwise        = minimum' xs
+
+reverse' :: [a] -> [a]
+reverse' l = rev l [] where
+	rev [] a       = a
+	rev (x : xs) a = rev xs (x : a)
+
+isPalindrome l | l == reverse' l = True
+               | otherwise       = False
+
+isPalindrome' :: Eq a => [a] -> Bool
+isPalindrome' []       = True
+isPalindrome' [x]      = True
+isPalindrome' (x : xs) = (x == last xs) && (isPalindrome' $ init xs)
+
+head' [] = 0
+head' (x : xs) = x
+
+tail' [] = []
+tail' (x : xs) = xs
+
+sum3 :: (Num a) => [a] -> [a] -> [a] -> [a]
+sum3 [] [] [] = []
+sum3 a b c = ((head' a) + (head' b) + (head' c)) : sum3 (tail' a) (tail' b) (tail' c)
+
+rev' a = rev'' a [] where
+    rev'' [] res = res
+    rev'' (a : as) res = rev'' as (a : res)
+
+groupElems :: Eq a => [a] -> [[a]]
+groupElems a = rev' (groupHelper a [] []) where
+    groupHelper [] [] res = res
+    groupHelper [] lst res = lst : res
+    groupHelper (a : as) [] res = groupHelper as [a] res
+    groupHelper (a : as) lst res | a == (head lst) = groupHelper as (a : lst) res
+                                 | otherwise       = groupHelper as [a] (lst : res)
