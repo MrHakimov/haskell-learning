@@ -79,18 +79,18 @@ on3 op f x y z = op (f x) (f y) (f z)
 -- h = max 42
 
 class Printable a where
-	toString  :: a -> String
+    toString  :: a -> String
 
 instance Printable Bool where
-	toString True  = "true"
-	toString False = "false"
-	toString _     = "error"
+    toString True  = "true"
+    toString False = "false"
+    toString _     = "error"
 
 instance Printable () where
-	toString _ = "unit type"
+    toString _ = "unit type"
 
 instance (Printable a, Printable b) => Printable (a, b) where
-	toString (a, b) = "(" ++ toString a ++ "," ++ toString b ++ ")"
+    toString (a, b) = "(" ++ toString a ++ "," ++ toString b ++ ")"
 
 class KnownToGork a where
     stomp :: a -> a
@@ -103,15 +103,15 @@ class KnownToMork a where
 class (KnownToGork a, KnownToMork a) => KnownToGorkAndMork a where
     stompOrStab :: a -> a
     stompOrStab a = if (doesEnrageGork a && doesEnrageMork a)
-    	then
-    		(stomp (stab a))
-    	else
-    		if (doesEnrageMork a)
-    			then (stomp a)
-    			else
-    				if (doesEnrageGork a)
-    					then (stab a)
-    					else a
+        then
+            (stomp (stab a))
+        else
+            if (doesEnrageMork a)
+                then (stomp a)
+                else
+                    if (doesEnrageGork a)
+                        then (stab a)
+                        else a
 
 a = 127.22
 b = 4.12
@@ -122,8 +122,8 @@ ip = show a ++ show b ++ show c ++ show d
 class (Bounded a, Eq a, Enum a) => SafeEnum a where
   ssucc :: a -> a
   ssucc a
-  	| a == maxBound = minBound
-  	| otherwise     = succ a
+    | a == maxBound = minBound
+    | otherwise     = succ a
 
   spred :: a -> a
   spred a
@@ -155,8 +155,8 @@ minimum' (x : xs) | x <= minimum' xs = x
 
 reverse' :: [a] -> [a]
 reverse' l = rev l [] where
-	rev [] a       = a
-	rev (x : xs) a = rev xs (x : a)
+    rev [] a       = a
+    rev (x : xs) a = rev xs (x : a)
 
 isPalindrome l | l == reverse' l = True
                | otherwise       = False
@@ -187,3 +187,47 @@ groupElems a = rev' (groupHelper a [] []) where
     groupHelper (a : as) [] res = groupHelper as [a] res
     groupHelper (a : as) lst res | a == (head lst) = groupHelper as (a : lst) res
                                  | otherwise       = groupHelper as [a] (lst : res)
+
+filterFunction x | x == '0'  = True
+                 | x == '1'  = True
+                 | x == '2'  = True
+                 | x == '3'  = True
+                 | x == '4'  = True
+                 | x == '5'  = True
+                 | x == '6'  = True
+                 | x == '7'  = True
+                 | x == '8'  = True
+                 | x == '9'  = True
+                 | otherwise = False
+
+readDigits :: String -> (String, String)
+readDigits = span filterFunction -- for "365ads" result equals to ("365", "ads")
+
+predicatesDisj p1 p2 x = (p1 x) || (p2 x)
+
+filterDisj :: (a -> Bool) -> (a -> Bool) -> [a] -> [a]
+filterDisj p1 p2  = filter $ predicatesDisj p1 p2
+
+qsort :: Ord a => [a] -> [a]
+qsort [] = []
+qsort a  = (qsort (filter (< (head a)) a)) ++ (filter (== (head a)) a) ++ (qsort (filter (> (head a)) a))
+
+squares'n'cubes :: Num a => [a] -> [a]
+squares'n'cubes = concatMap (\x -> [x * x, x * x * x])
+
+perms' :: Eq a => [a] -> [[a]]
+perms' [] = [[]]
+perms' a = concatMap (\x -> map ((:) x) (perms' (filter (not . (== x)) a))) a
+
+allShifts (a : as) n res | n == 0    = res
+                         | otherwise = allShifts (as ++ [a]) (n - 1) ((a : as) : res)
+
+perms :: [a] -> [[a]]
+perms [] = [[]]
+perms a = concatMap (\x -> map ((:) (head x)) (perms (tail x))) (allShifts a (length a) [])
+
+delAllUpper :: String -> String
+delAllUpper = unwords . filter (any (not . isUpper)) . words
+
+max3 :: Ord a => [a] -> [a] -> [a] -> [a]
+max3 = zipWith3 (\a b c -> max (max a b) c)
