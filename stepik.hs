@@ -298,3 +298,16 @@ evenOnly'' = (foldr (\(n, x) xs -> if even n then x:xs else xs) []) . (zip [1..]
 revRange :: (Char,Char) -> [Char]
 revRange = unfoldr g 
   where g = (\(f, s) -> if f > s then Nothing else Just (s, (f, pred s)))
+
+data Shape = Circle Double | Rectangle Double Double
+
+square :: Double -> Shape
+square a = Rectangle a a
+
+isSquare :: Shape -> Bool
+isSquare (Rectangle a b) = a == b
+isSquare _ = False
+
+isSquare' :: Shape -> Bool
+isSquare' rect@(Rectangle x y) = square x == rect
+isSquare' _ = False
