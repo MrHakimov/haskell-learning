@@ -1,5 +1,6 @@
 import Data.Char
 import Data.Function -- for `on`
+import Data.List -- for unfoldr
 
 discount :: Double -> Double -> Double -> Double
 discount limit proc sum = if sum >= limit then sum * (100 - proc) / 100 else sum
@@ -231,3 +232,69 @@ delAllUpper = unwords . filter (any (not . isUpper)) . words
 
 max3 :: Ord a => [a] -> [a] -> [a] -> [a]
 max3 = zipWith3 (\a b c -> max (max a b) c)
+
+fibStream :: [Integer]
+fibStream = zipWith (+) (0 : fibStream) (0 : 1 : fibStream)
+
+fibStream' :: [Integer]
+fibStream' = 0 : 1 : [a + b | (a, b) <- zip fibStream' (tail fibStream')]
+
+data Odd = Odd Integer 
+  deriving (Eq, Show)
+
+instance Enum Odd where
+    succ (Odd a) = Odd (a + 2)
+    pred (Odd a) = Odd (a - 2)
+    toEnum a = (Odd (toInteger (a)))
+    fromEnum (Odd a) = fromIntegral a
+    enumFrom = iterate succ
+    enumFromThen (Odd x) (Odd y) = map Odd [x, y ..]
+    enumFromTo (Odd x) (Odd y) = map Odd [x, x + 2 .. y]
+    enumFromThenTo (Odd x) (Odd y) (Odd z) = map Odd [x, y .. z]
+
+data Odd' = Odd' Integer 
+  deriving (Eq, Show)
+
+instance Enum Odd' where
+  succ (Odd' n)                             = Odd' . succ . succ $ n
+  pred (Odd' n)                             = Odd' . pred . pred $ n
+  toEnum n                                  = Odd' (toInteger n)
+  fromEnum (Odd' n)                         = fromInteger n
+  enumFrom (Odd' n)                         = map Odd' (enumFromThen n (succ . succ  $ n))
+  enumFromThen (Odd' x) (Odd' y)            = map Odd' (enumFromThen x y)
+  enumFromTo (Odd' x) (Odd' y)              = map Odd' (enumFromThenTo x (succ. succ $ x) y)
+  enumFromThenTo (Odd' x) (Odd' y) (Odd' z) = map Odd' (enumFromThenTo x y z)
+
+change :: (Ord a, Num a) => a -> [[a]]
+change n | n == 0 = [[]]
+         | otherwise = [x : exchanged | x <- [2, 3, 7], x <= n, exchanged <- change $ n - x]
+
+concatList :: [[a]] -> [a]
+concatList = foldr (++) []
+
+-- get a = 1
+
+-- lengthList :: [a] -> Int
+-- lengthList = foldr ((+) . get)
+
+sumOdd :: [Integer] -> Integer
+sumOdd = foldr (\x s -> (s + x * (x `mod` 2))) 0
+
+sumOdd' :: [Integer] -> Integer
+sumOdd' = foldr (\x s -> if odd x then x + s else s) 0
+
+meanList :: [Double] -> Double
+meanList = (\(f, s) -> f / s) . foldr (\x (s, k) -> (s + x, k + 1)) (0, 0)
+
+evenOnly' :: [a] -> [a]
+evenOnly' l = ((\(r, pos) -> r) . foldl (\(r, pos) x -> if pos `mod` 2 == 0 then (r ++ [x], pos + 1) else (r, pos + 1)) ([], 1)) l
+
+evenOnly :: [a] -> [a]
+evenOnly = snd . foldr (\a (xs, ys) -> (a : ys, xs)) ([], [])
+
+evenOnly'' :: [a] -> [a]
+evenOnly'' = (foldr (\(n, x) xs -> if even n then x:xs else xs) []) . (zip [1..])
+
+revRange :: (Char,Char) -> [Char]
+revRange = unfoldr g 
+  where g = (\(f, s) -> if f > s then Nothing else Just (s, (f, pred s)))
